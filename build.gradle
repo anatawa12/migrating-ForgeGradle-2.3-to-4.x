@@ -104,3 +104,15 @@ processResources {
         exclude 'mcmod.info'
     }
 }
+
+// workaround for userdev bug
+tasks.create("copyResourceToClasses", Copy.class) {
+    tasks.classes.dependsOn(it)
+    dependsOn(tasks.processResources)
+    onlyIf { gradle.taskGraph.hasTask(tasks.prepareRuns) }
+
+    into("$buildDir/classes/java/main")
+    // if you write @Mod class in kotlin, please use code below
+    // into("$buildDir/classes/kotlin/main")
+    from(tasks.processResources.destinationDir)
+}
